@@ -1,7 +1,7 @@
 {
   "name": "@modelcontextprotocol/server-flux-image-generator",
-  "version": "1.0.0",
-  "description": "MCP server for generating images with Black Forest Lab's FLUX model",
+  "version": "2.0.0",
+  "description": "MCP server for FLUX.2 and FLUX.1 image generation, editing, and manipulation with Black Forest Labs API",
   "license": "MIT",
   "author": "Model Context Protocol (https://modelcontextprotocol.io)",
   "homepage": "https://modelcontextprotocol.io",
