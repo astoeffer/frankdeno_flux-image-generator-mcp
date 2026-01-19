@@ -329,3 +329,63 @@ export const OUTPAINT_TOOL: Tool = {
     required: ["image"]
   }
 };
+
+/**
+ * Control types for structural guidance
+ */
+export const CONTROL_TYPES = ['canny', 'depth', 'pose'] as const;
+export type ControlType = typeof CONTROL_TYPES[number];
+
+/**
+ * Tool definition for Control Generation (FLUX.1 Control)
+ */
+export const CONTROL_TOOL: Tool = {
+  name: "control",
+  description: "Generate an image using structural control (edges, depth, or pose) with FLUX.1. Provide a control image that guides the generation.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      type: {
+        type: "string",
+        enum: CONTROL_TYPES,
+        description: "Type of control: 'canny' (edge detection), 'depth' (depth map), or 'pose' (body pose)"
+      },
+      image: {
+        type: "string",
+        description: "Path to the control image (edges, depth map, or pose skeleton)"
+      },
+      prompt: {
+        type: "string",
+        description: "Text description of what to generate"
+      },
+      steps: {
+        type: "number",
+        description: "Number of inference steps (default: 50)",
+        default: 50
+      },
+      guidance: {
+        type: "number",
+        description: "Guidance scale - canny: 30, depth: 15, pose: 25 (defaults)"
+      },
+      seed: {
+        type: "number",
+        description: "Random seed for reproducibility"
+      },
+      outputFormat: {
+        type: "string",
+        enum: ["jpeg", "png"],
+        default: "jpeg"
+      },
+      safetyTolerance: {
+        type: "number",
+        description: "Content moderation tolerance (0-6, default 2)",
+        default: 2
+      },
+      customPath: {
+        type: "string",
+        description: "Custom path to save the output image"
+      }
+    },
+    required: ["type", "image", "prompt"]
+  }
+};

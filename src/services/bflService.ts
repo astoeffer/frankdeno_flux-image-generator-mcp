@@ -5,7 +5,7 @@
 import axios from 'axios';
 import path from 'path';
 import fs from 'fs/promises';
-import type { Flux2Model } from '../schemas.js';
+import type { Flux2Model, ControlType } from '../schemas.js';
 
 // API Base URL
 const BFL_API_BASE = 'https://api.bfl.ai';
@@ -22,6 +22,20 @@ const FLUX2_ENDPOINTS: Record<Flux2Model, string> = {
 // FLUX.1 endpoints for inpainting/outpainting
 const FLUX1_FILL_ENDPOINT = '/v1/flux-pro-1.0-fill';
 const FLUX1_EXPAND_ENDPOINT = '/v1/flux-pro-1.0-expand';
+
+// FLUX.1 control endpoints
+const FLUX1_CONTROL_ENDPOINTS: Record<ControlType, string> = {
+  'canny': '/v1/flux-pro-1.0-canny',
+  'depth': '/v1/flux-pro-1.0-depth',
+  'pose': '/v1/flux-pro-1.0-pose'
+};
+
+// Default guidance values per control type
+const CONTROL_DEFAULT_GUIDANCE: Record<ControlType, number> = {
+  'canny': 30,
+  'depth': 15,
+  'pose': 25
+};
 
 /**
  * Options for FLUX.2 image generation
@@ -78,6 +92,23 @@ export interface OutpaintOptions extends InpaintOptions {
   bottom?: number;
   left?: number;
   right?: number;
+}
+
+/**
+ * Options for FLUX.1 control generation
+ */
+export interface ControlOptions {
+  steps?: number;
+  guidance?: number;
+  seed?: number;
+  outputFormat?: 'jpeg' | 'png';
+  safetyTolerance?: number;
+  saveImage?: boolean;
+  filename?: string;
+  outputDir?: string;
+  customPath?: string;
+  maxPollingAttempts?: number;
+  pollingInterval?: number;
 }
 
 /**
@@ -466,6 +497,63 @@ export async function outpaint(
   if (options.saveImage !== false) {
     try {
       const filename = options.filename || `flux_outpaint_${Date.now()}.${options.outputFormat || 'jpeg'}`;
+      const savePath = await downloadImage(
+        imageUrl,
+        filename,
+        options.outputDir || process.env.OUTPUT_DIR || './output',
+        options.customPath
+      );
+      result.local_path = savePath;
+    } catch (downloadError: any) {
+      console.error(`[ERROR] Error saving image: ${downloadError.message}`);
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Generate an image using structural control (canny/depth/pose) with FLUX.1
+ */
+export async function control(
+  controlType: ControlType,
+  controlImagePath: string,
+  prompt: string,
+  options: ControlOptions = {}
+): Promise<ImageGenerationResult> {
+  const endpoint = FLUX1_CONTROL_ENDPOINTS[controlType];
+
+  if (!endpoint) {
+    throw new Error(`Unknown control type: ${controlType}`);
+  }
+
+  const defaultGuidance = CONTROL_DEFAULT_GUIDANCE[controlType];
+
+  const payload: Record<string, any> = {
+    control_image: await encodeImageToBase64(controlImagePath),
+    prompt,
+    steps: options.steps ?? 50,
+    guidance: options.guidance ?? defaultGuidance,
+    safety_tolerance: options.safetyTolerance ?? 2,
+    output_format: options.outputFormat || 'jpeg'
+  };
+
+  if (options.seed !== undefined) {
+    payload.seed = options.seed;
+  }
+
+  console.error(`[INFO] Generating with ${controlType} control: "${prompt}"`);
+
+  const imageUrl = await makeApiRequest(endpoint, payload, options);
+
+  const result: ImageGenerationResult = {
+    image_url: imageUrl,
+    local_path: null
+  };
+
+  if (options.saveImage !== false) {
+    try {
+      const filename = options.filename || `flux_${controlType}_${Date.now()}.${options.outputFormat || 'jpeg'}`;
       const savePath = await downloadImage(
         imageUrl,
         filename,

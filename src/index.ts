@@ -11,7 +11,7 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import * as dotenv from 'dotenv';
-import { generateImage, img2img, inpaint, outpaint } from './services/bflService.js';
+import { generateImage, img2img, inpaint, outpaint, control } from './services/bflService.js';
 import {
   GENERATE_IMAGE_TOOL,
   QUICK_IMAGE_TOOL,
@@ -19,7 +19,9 @@ import {
   IMG2IMG_TOOL,
   INPAINT_TOOL,
   OUTPAINT_TOOL,
-  type Flux2Model
+  CONTROL_TOOL,
+  type Flux2Model,
+  type ControlType
 } from './schemas.js';
 
 // Load environment variables
@@ -55,7 +57,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     BATCH_GENERATE_IMAGES_TOOL,
     IMG2IMG_TOOL,
     INPAINT_TOOL,
-    OUTPAINT_TOOL
+    OUTPAINT_TOOL,
+    CONTROL_TOOL
   ],
 }));
 
@@ -270,6 +273,42 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         let textContent = `Outpainting complete (FLUX.1 Expand)\n`;
         textContent += `Expanded: top=${options.top}, bottom=${options.bottom}, left=${options.left}, right=${options.right}\n`;
         textContent += `Link: ${result.image_url}`;
+        if (result.local_path) {
+          textContent += `\nSaved to: ${result.local_path}`;
+        }
+
+        return {
+          content: [{ type: "text", text: textContent }],
+          isError: false,
+        };
+      }
+
+      case "control": {
+        if (typeof args.type !== 'string') {
+          throw new Error("Invalid type: must be 'canny', 'depth', or 'pose'");
+        }
+        if (typeof args.image !== 'string') {
+          throw new Error("Invalid image: must be a string path");
+        }
+        if (typeof args.prompt !== 'string') {
+          throw new Error("Invalid prompt: must be a string");
+        }
+
+        const controlType = args.type as ControlType;
+        const options = {
+          steps: typeof args.steps === 'number' ? args.steps : 50,
+          guidance: typeof args.guidance === 'number' ? args.guidance : undefined,
+          seed: typeof args.seed === 'number' ? args.seed : undefined,
+          outputFormat: (args.outputFormat as 'jpeg' | 'png') || 'jpeg',
+          safetyTolerance: typeof args.safetyTolerance === 'number' ? args.safetyTolerance : 2,
+          saveImage: true,
+          filename: `flux_${controlType}_${Date.now()}.${args.outputFormat || 'jpeg'}`,
+          customPath: typeof args.customPath === 'string' ? args.customPath : undefined
+        };
+
+        const result = await control(controlType, args.image, args.prompt, options);
+
+        let textContent = `Control generation complete (FLUX.1 ${controlType})\nLink: ${result.image_url}`;
         if (result.local_path) {
           textContent += `\nSaved to: ${result.local_path}`;
         }

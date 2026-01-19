@@ -25,6 +25,7 @@ A Model Context Protocol (MCP) server for image generation using Black Forest La
 | `img2img` | Image-to-image with reference images | FLUX.2 |
 | `inpaint` | Edit areas using mask | FLUX.1 Fill |
 | `outpaint` | Expand image boundaries | FLUX.1 Expand |
+| `control` | Structural guidance (canny/depth/pose) | FLUX.1 Control |
 
 ## Prerequisites
 
@@ -185,6 +186,28 @@ Expand image boundaries (FLUX.1 Expand).
 }
 ```
 
+### control
+
+Generate using structural guidance (FLUX.1 Control).
+
+**Parameters:**
+- `type` (string, required): Control type - `canny` (edges), `depth` (depth map), or `pose` (body skeleton)
+- `image` (string, required): Path to control image
+- `prompt` (string, required): Text description
+- `steps` (number): Inference steps (default: 50)
+- `guidance` (number): Guidance scale (defaults: canny=30, depth=15, pose=25)
+- `seed`, `outputFormat`, `safetyTolerance`, `customPath`
+
+**Example:**
+```json
+{
+  "type": "canny",
+  "image": "/path/to/edges.png",
+  "prompt": "A futuristic city following these edges",
+  "guidance": 30
+}
+```
+
 ## API Endpoints Used
 
 | Endpoint | Purpose |
@@ -196,6 +219,9 @@ Expand image boundaries (FLUX.1 Expand).
 | `/v1/flux-2-klein-4b` | FLUX.2 Klein 4B |
 | `/v1/flux-pro-1.0-fill` | FLUX.1 Inpainting |
 | `/v1/flux-pro-1.0-expand` | FLUX.1 Outpainting |
+| `/v1/flux-pro-1.0-canny` | FLUX.1 Canny control |
+| `/v1/flux-pro-1.0-depth` | FLUX.1 Depth control |
+| `/v1/flux-pro-1.0-pose` | FLUX.1 Pose control |
 
 Base URL: `https://api.bfl.ai`
 
