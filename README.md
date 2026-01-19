@@ -61,16 +61,24 @@ Add to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "flux-image-generator": {
+    "flux": {
       "command": "node",
       "args": ["/path/to/flux-image-generator-mcp/dist/index.js"],
       "env": {
-        "BFL_API_KEY": "your_api_key_here"
+        "BFL_API_KEY": "your_api_key_here",
+        "DEFAULT_OUTPUT_FORMAT": "png"
       }
     }
   }
 }
 ```
+
+### Environment Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `BFL_API_KEY` | Yes | - | Your Black Forest Labs API key |
+| `DEFAULT_OUTPUT_FORMAT` | No | `png` | Default output format: `png` or `jpeg` |
 
 ## Tool Reference
 

@@ -27,6 +27,9 @@ import {
 // Load environment variables
 dotenv.config();
 
+// Default output format from config (env var) or fallback to png
+const DEFAULT_OUTPUT_FORMAT = (process.env.DEFAULT_OUTPUT_FORMAT as 'jpeg' | 'png') || 'png';
+
 // Retrieve the Black Forest Lab API key from environment variables
 const BFL_API_KEY = process.env.BFL_API_KEY;
 if (!BFL_API_KEY) {
@@ -85,12 +88,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           height: typeof args.height === 'number' ? args.height : 1024,
           seed: typeof args.seed === 'number' ? args.seed : undefined,
           safetyTolerance: typeof args.safetyTolerance === 'number' ? args.safetyTolerance : 2,
-          outputFormat: (args.outputFormat as 'jpeg' | 'png') || 'jpeg',
+          outputFormat: (args.outputFormat as 'jpeg' | 'png') || DEFAULT_OUTPUT_FORMAT,
           promptUpsampling: typeof args.promptUpsampling === 'boolean' ? args.promptUpsampling : true,
           guidance: typeof args.guidance === 'number' ? args.guidance : undefined,
           steps: typeof args.steps === 'number' ? args.steps : undefined,
           saveImage: true,
-          filename: `flux_${Date.now()}.${args.outputFormat || 'jpeg'}`,
+          filename: `flux_${Date.now()}.${args.outputFormat || DEFAULT_OUTPUT_FORMAT}`,
           customPath: typeof args.customPath === 'string' ? args.customPath : undefined
         };
 
@@ -194,9 +197,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           height: typeof args.height === 'number' ? args.height : undefined,
           seed: typeof args.seed === 'number' ? args.seed : undefined,
           safetyTolerance: typeof args.safetyTolerance === 'number' ? args.safetyTolerance : 2,
-          outputFormat: (args.outputFormat as 'jpeg' | 'png') || 'jpeg',
+          outputFormat: (args.outputFormat as 'jpeg' | 'png') || DEFAULT_OUTPUT_FORMAT,
           saveImage: true,
-          filename: `flux_img2img_${Date.now()}.${args.outputFormat || 'jpeg'}`,
+          filename: `flux_img2img_${Date.now()}.${args.outputFormat || DEFAULT_OUTPUT_FORMAT}`,
           customPath: typeof args.customPath === 'string' ? args.customPath : undefined
         };
 
@@ -228,10 +231,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           steps: typeof args.steps === 'number' ? args.steps : 50,
           guidance: typeof args.guidance === 'number' ? args.guidance : 60,
           seed: typeof args.seed === 'number' ? args.seed : undefined,
-          outputFormat: (args.outputFormat as 'jpeg' | 'png') || 'jpeg',
+          outputFormat: (args.outputFormat as 'jpeg' | 'png') || DEFAULT_OUTPUT_FORMAT,
           safetyTolerance: typeof args.safetyTolerance === 'number' ? args.safetyTolerance : 2,
           saveImage: true,
-          filename: `flux_inpaint_${Date.now()}.${args.outputFormat || 'jpeg'}`,
+          filename: `flux_inpaint_${Date.now()}.${args.outputFormat || DEFAULT_OUTPUT_FORMAT}`,
           customPath: typeof args.customPath === 'string' ? args.customPath : undefined
         };
 
@@ -261,10 +264,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           steps: typeof args.steps === 'number' ? args.steps : 50,
           guidance: typeof args.guidance === 'number' ? args.guidance : 60,
           seed: typeof args.seed === 'number' ? args.seed : undefined,
-          outputFormat: (args.outputFormat as 'jpeg' | 'png') || 'jpeg',
+          outputFormat: (args.outputFormat as 'jpeg' | 'png') || DEFAULT_OUTPUT_FORMAT,
           safetyTolerance: typeof args.safetyTolerance === 'number' ? args.safetyTolerance : 2,
           saveImage: true,
-          filename: `flux_outpaint_${Date.now()}.${args.outputFormat || 'jpeg'}`,
+          filename: `flux_outpaint_${Date.now()}.${args.outputFormat || DEFAULT_OUTPUT_FORMAT}`,
           customPath: typeof args.customPath === 'string' ? args.customPath : undefined
         };
 
@@ -299,10 +302,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           steps: typeof args.steps === 'number' ? args.steps : 50,
           guidance: typeof args.guidance === 'number' ? args.guidance : undefined,
           seed: typeof args.seed === 'number' ? args.seed : undefined,
-          outputFormat: (args.outputFormat as 'jpeg' | 'png') || 'jpeg',
+          outputFormat: (args.outputFormat as 'jpeg' | 'png') || DEFAULT_OUTPUT_FORMAT,
           safetyTolerance: typeof args.safetyTolerance === 'number' ? args.safetyTolerance : 2,
           saveImage: true,
-          filename: `flux_${controlType}_${Date.now()}.${args.outputFormat || 'jpeg'}`,
+          filename: `flux_${controlType}_${Date.now()}.${args.outputFormat || DEFAULT_OUTPUT_FORMAT}`,
           customPath: typeof args.customPath === 'string' ? args.customPath : undefined
         };
 

@@ -59,7 +59,7 @@ export const GENERATE_IMAGE_TOOL: Tool = {
         type: "string",
         enum: ["jpeg", "png"],
         description: "Output image format",
-        default: "jpeg"
+        default: "png"
       },
       // FLEX model specific
       guidance: {
@@ -195,7 +195,7 @@ export const IMG2IMG_TOOL: Tool = {
       outputFormat: {
         type: "string",
         enum: ["jpeg", "png"],
-        default: "jpeg"
+        default: "png"
       },
       customPath: {
         type: "string",
@@ -244,7 +244,7 @@ export const INPAINT_TOOL: Tool = {
       outputFormat: {
         type: "string",
         enum: ["jpeg", "png"],
-        default: "jpeg"
+        default: "png"
       },
       safetyTolerance: {
         type: "number",
@@ -314,7 +314,7 @@ export const OUTPAINT_TOOL: Tool = {
       outputFormat: {
         type: "string",
         enum: ["jpeg", "png"],
-        default: "jpeg"
+        default: "png"
       },
       safetyTolerance: {
         type: "number",
@@ -374,7 +374,7 @@ export const CONTROL_TOOL: Tool = {
       outputFormat: {
         type: "string",
         enum: ["jpeg", "png"],
-        default: "jpeg"
+        default: "png"
       },
       safetyTolerance: {
         type: "number",

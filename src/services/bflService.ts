@@ -10,6 +10,9 @@ import type { Flux2Model, ControlType } from '../schemas.js';
 // API Base URL
 const BFL_API_BASE = 'https://api.bfl.ai';
 
+// Default output format from config (env var) or fallback to png
+const DEFAULT_OUTPUT_FORMAT = (process.env.DEFAULT_OUTPUT_FORMAT as 'jpeg' | 'png') || 'png';
+
 // FLUX.2 model endpoints
 const FLUX2_ENDPOINTS: Record<Flux2Model, string> = {
   'flux-2-pro': '/v1/flux-2-pro',
@@ -293,7 +296,7 @@ export async function generateImage(
     width: options.width || 1024,
     height: options.height || 1024,
     safety_tolerance: options.safetyTolerance ?? 2,
-    output_format: options.outputFormat || 'jpeg'
+    output_format: options.outputFormat || DEFAULT_OUTPUT_FORMAT
   };
 
   if (options.seed !== undefined) {
@@ -323,7 +326,7 @@ export async function generateImage(
   // Save image if requested
   if (options.saveImage !== false) {
     try {
-      const filename = options.filename || `flux_${Date.now()}.${options.outputFormat || 'jpeg'}`;
+      const filename = options.filename || `flux_${Date.now()}.${options.outputFormat || DEFAULT_OUTPUT_FORMAT}`;
       const savePath = await downloadImage(
         imageUrl,
         filename,
@@ -368,7 +371,7 @@ export async function img2img(
     prompt,
     input_image: await encodeImageToBase64(inputImagePath),
     safety_tolerance: options.safetyTolerance ?? 2,
-    output_format: options.outputFormat || 'jpeg'
+    output_format: options.outputFormat || DEFAULT_OUTPUT_FORMAT
   };
 
   if (options.width) payload.width = options.width;
@@ -391,7 +394,7 @@ export async function img2img(
 
   if (options.saveImage !== false) {
     try {
-      const filename = options.filename || `flux_img2img_${Date.now()}.${options.outputFormat || 'jpeg'}`;
+      const filename = options.filename || `flux_img2img_${Date.now()}.${options.outputFormat || DEFAULT_OUTPUT_FORMAT}`;
       const savePath = await downloadImage(
         imageUrl,
         filename,
@@ -423,7 +426,7 @@ export async function inpaint(
     steps: options.steps ?? 50,
     guidance: options.guidance ?? 60,
     safety_tolerance: options.safetyTolerance ?? 2,
-    output_format: options.outputFormat || 'jpeg'
+    output_format: options.outputFormat || DEFAULT_OUTPUT_FORMAT
   };
 
   if (options.seed !== undefined) {
@@ -441,7 +444,7 @@ export async function inpaint(
 
   if (options.saveImage !== false) {
     try {
-      const filename = options.filename || `flux_inpaint_${Date.now()}.${options.outputFormat || 'jpeg'}`;
+      const filename = options.filename || `flux_inpaint_${Date.now()}.${options.outputFormat || DEFAULT_OUTPUT_FORMAT}`;
       const savePath = await downloadImage(
         imageUrl,
         filename,
@@ -473,7 +476,7 @@ export async function outpaint(
     steps: options.steps ?? 50,
     guidance: options.guidance ?? 60,
     safety_tolerance: options.safetyTolerance ?? 2,
-    output_format: options.outputFormat || 'jpeg'
+    output_format: options.outputFormat || DEFAULT_OUTPUT_FORMAT
   };
 
   if (options.seed !== undefined) {
@@ -496,7 +499,7 @@ export async function outpaint(
 
   if (options.saveImage !== false) {
     try {
-      const filename = options.filename || `flux_outpaint_${Date.now()}.${options.outputFormat || 'jpeg'}`;
+      const filename = options.filename || `flux_outpaint_${Date.now()}.${options.outputFormat || DEFAULT_OUTPUT_FORMAT}`;
       const savePath = await downloadImage(
         imageUrl,
         filename,
@@ -535,7 +538,7 @@ export async function control(
     steps: options.steps ?? 50,
     guidance: options.guidance ?? defaultGuidance,
     safety_tolerance: options.safetyTolerance ?? 2,
-    output_format: options.outputFormat || 'jpeg'
+    output_format: options.outputFormat || DEFAULT_OUTPUT_FORMAT
   };
 
   if (options.seed !== undefined) {
@@ -553,7 +556,7 @@ export async function control(
 
   if (options.saveImage !== false) {
     try {
-      const filename = options.filename || `flux_${controlType}_${Date.now()}.${options.outputFormat || 'jpeg'}`;
+      const filename = options.filename || `flux_${controlType}_${Date.now()}.${options.outputFormat || DEFAULT_OUTPUT_FORMAT}`;
       const savePath = await downloadImage(
         imageUrl,
         filename,
